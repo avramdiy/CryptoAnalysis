@@ -10,9 +10,16 @@ def display_table():
     
     # Load the CSV file into a pandas dataframe
     df = pd.read_csv(file_path)
+
+    # Remove rows with any NaN values
+    df_cleaned = df.dropna()
+
+    # Reformat the 'Date' column to MM/DD/YYYY if it exists
+    if 'Date' in df_cleaned.columns:
+        df_cleaned['Date'] = pd.to_datetime(df_cleaned['Date'], dayfirst=True).dt.strftime('%m/%d/%Y')
     
     # Convert the dataframe to an HTML table
-    html_table = df.to_html(classes='table table-striped', index=False)
+    html_table = df_cleaned.to_html(classes='table table-striped', index=False)
     
     # HTML template with the table embedded
     html_template = f"""
