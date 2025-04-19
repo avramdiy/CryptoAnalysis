@@ -77,24 +77,39 @@ def quarterly_data():
         end_date = pd.Timestamp('2025-03-31')
         df_quarterly = df_quarterly[df_quarterly['Date'] <= end_date]
 
-        # Aggregated data by quarter, getting the average of 'btc_closing_price', 'eth_closing_price', and 'usdt_closing_price'
-        df_quarterly_agg = df_quarterly.groupby(df_quarterly['Quarter'])[['btc_closing_price', 'eth_closing_price', 'usdt_closing_price']].mean()
+        # Aggregated data by quarter, getting the average of all closing prices
+        df_quarterly_agg = df_quarterly.groupby(df_quarterly['Quarter'])[[
+            'btc_closing_price', 'eth_closing_price', 'usdt_closing_price', 'xrp_closing_price', 
+            'bnb_closing_price', 'sol_closing_price', 'usdc_closing_price', 'doge_closing_price', 
+            'ada_closing_price', 'trx_closing_price']].mean()
+
+        # Scale down BTC closing prices by a factor (e.g., divide by 10000)
+        df_quarterly_agg['btc_closing_price'] = df_quarterly_agg['btc_closing_price'] / 100
 
         # Plot the aggregated data
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(12, 8))
+        
+        # Plot each cryptocurrency with distinct colors and markers
         df_quarterly_agg['btc_closing_price'].plot(kind='line', marker='o', markersize=6, linewidth=2, label='BTC Closing Price', color='b')
         df_quarterly_agg['eth_closing_price'].plot(kind='line', marker='s', markersize=6, linewidth=2, label='ETH Closing Price', color='g')
         df_quarterly_agg['usdt_closing_price'].plot(kind='line', marker='^', markersize=6, linewidth=2, label='USDT Closing Price', color='r')
+        df_quarterly_agg['xrp_closing_price'].plot(kind='line', marker='d', markersize=6, linewidth=2, label='XRP Closing Price', color='c')
+        df_quarterly_agg['bnb_closing_price'].plot(kind='line', marker='v', markersize=6, linewidth=2, label='BNB Closing Price', color='m')
+        df_quarterly_agg['sol_closing_price'].plot(kind='line', marker='p', markersize=6, linewidth=2, label='SOL Closing Price', color='y')
+        df_quarterly_agg['usdc_closing_price'].plot(kind='line', marker='x', markersize=6, linewidth=2, label='USDC Closing Price', color='orange')
+        df_quarterly_agg['doge_closing_price'].plot(kind='line', marker='H', markersize=6, linewidth=2, label='DOGE Closing Price', color='pink')
+        df_quarterly_agg['ada_closing_price'].plot(kind='line', marker='*', markersize=6, linewidth=2, label='ADA Closing Price', color='purple')
+        df_quarterly_agg['trx_closing_price'].plot(kind='line', marker='D', markersize=6, linewidth=2, label='TRX Closing Price', color='brown')
         
-        plt.title('Quarterly Crypto Closing Prices (BTC, ETH, USDT)')
+        plt.title('Quarterly Crypto Closing Prices (May 2020 to March 2025)')
         plt.xlabel('Quarter')
         plt.ylabel('Closing Price')
-        plt.legend()
+        plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid(True)
 
         # Save plot to a BytesIO object and encode it as base64
         img = io.BytesIO()
-        plt.savefig(img, format='png')
+        plt.savefig(img, format='png', bbox_inches='tight')
         img.seek(0)
         plot_url = base64.b64encode(img.getvalue()).decode('utf8')
 
@@ -110,7 +125,7 @@ def quarterly_data():
     </head>
     <body>
         <div class="container mt-5">
-            <h1 class="mb-4">Quarterly Crypto Closing Prices (BTC, ETH, USDT) (May 2020 to March 2025)</h1>
+            <h1 class="mb-4">Quarterly Crypto Closing Prices (BTC, ETH, USDT, XRP, BNB, SOL, USDC, DOGE, ADA, TRX) (May 2020 to March 2025)</h1>
             <img src="data:image/png;base64,{plot_url}" alt="Quarterly Crypto Closing Prices">
         </div>
     </body>

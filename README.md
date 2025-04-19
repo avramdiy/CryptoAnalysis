@@ -29,3 +29,7 @@
 - Add "eth_closing_price" and "usdt_closing_price" columns as separately colored lines in the same route and plot.
 
 ### 5th Commit
+
+- Add "xrp_closing_price" "bnb_closing_price" "sol_closing_price" "usdc_closing_price" "doge_closing_price" "ada_closing_price" "trx_closing_price" columns as separately colored lines on the same route and plot.
+
+- Scaled "btc_closing_price" down by 100 to show better variance amongst the ten cryptocurrencies.
