@@ -25,9 +25,9 @@ def display_table():
         df_cleaned['Date'] = df_cleaned['Date'].dt.strftime('%m/%d/%Y')
 
         # Filter data to start from 04/30/2020
-        start_date = pd.Timestamp('2020-05-01')
+        start_date = pd.Timestamp('2020-04-30')
         df_cleaned = df_cleaned[df_cleaned['Date'] >= start_date.strftime('%m/%d/%Y')]
-    
+
     # Convert the dataframe to an HTML table
     html_table = df_cleaned.to_html(classes='table table-striped', index=False)
     
@@ -52,7 +52,6 @@ def display_table():
     
     return render_template_string(html_template)
 
-# Initialize quarterly chart
 @app.route('/quarterly')
 def quarterly_data():
     # Path to your CSV file
@@ -78,15 +77,19 @@ def quarterly_data():
         end_date = pd.Timestamp('2025-03-31')
         df_quarterly = df_quarterly[df_quarterly['Date'] <= end_date]
 
-        # Aggregated data by quarter, getting the average of 'btc_closing_price'
-        df_quarterly_agg = df_quarterly.groupby(df_quarterly['Date'].dt.to_period('Q'))['btc_closing_price'].mean()
+        # Aggregated data by quarter, getting the average of 'btc_closing_price', 'eth_closing_price', and 'usdt_closing_price'
+        df_quarterly_agg = df_quarterly.groupby(df_quarterly['Quarter'])[['btc_closing_price', 'eth_closing_price', 'usdt_closing_price']].mean()
 
         # Plot the aggregated data
         plt.figure(figsize=(10, 6))
-        df_quarterly_agg.plot(kind='line', marker='o', markersize=6, linewidth=2)
-        plt.title('BTC Closing Price per Quarter')
+        df_quarterly_agg['btc_closing_price'].plot(kind='line', marker='o', markersize=6, linewidth=2, label='BTC Closing Price', color='b')
+        df_quarterly_agg['eth_closing_price'].plot(kind='line', marker='s', markersize=6, linewidth=2, label='ETH Closing Price', color='g')
+        df_quarterly_agg['usdt_closing_price'].plot(kind='line', marker='^', markersize=6, linewidth=2, label='USDT Closing Price', color='r')
+        
+        plt.title('Quarterly Crypto Closing Prices (BTC, ETH, USDT)')
         plt.xlabel('Quarter')
-        plt.ylabel('BTC Closing Price')
+        plt.ylabel('Closing Price')
+        plt.legend()
         plt.grid(True)
 
         # Save plot to a BytesIO object and encode it as base64
@@ -102,13 +105,13 @@ def quarterly_data():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Quarterly BTC Closing Prices</title>
+        <title>Quarterly Crypto Closing Prices</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     </head>
     <body>
         <div class="container mt-5">
-            <h1 class="mb-4">Quarterly BTC Closing Prices (May 2020 to March 2025)</h1>
-            <img src="data:image/png;base64,{plot_url}" alt="Quarterly BTC Closing Price">
+            <h1 class="mb-4">Quarterly Crypto Closing Prices (BTC, ETH, USDT) (May 2020 to March 2025)</h1>
+            <img src="data:image/png;base64,{plot_url}" alt="Quarterly Crypto Closing Prices">
         </div>
     </body>
     </html>

@@ -26,4 +26,6 @@
 
 ### 4th Commit
 
+- Add "eth_closing_price" and "usdt_closing_price" columns as separately colored lines in the same route and plot.
+
 ### 5th Commit
